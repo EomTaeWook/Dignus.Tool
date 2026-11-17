@@ -4,11 +4,11 @@ Excel 데이터 변환, C# 코드 생성, 프로토콜 핸들러 생성, DLL 복
 
 | 프로젝트 | 기능 | 대상 프레임워크 |
 | --- | --- | --- |
-| ExcelToJson | Excel에서 데이터 JSON과 필드·enum 정의 생성 | .NET 10 |
-| JsonToCSharp | 정의 파일에서 C# 템플릿과 로더 생성 | .NET 10 |
-| ProtocolGenerator | DLL의 enum과 모델에서 프로토콜 핸들러 생성 | .NET 10 |
-| DllDeploy | 지정한 DLL과 외부 파일을 대상 폴더로 복사 | .NET 10 |
-| Shared | ExcelToJson·JsonToCSharp 공통 타입과 생성 형식 | .NET 10 |
+| [ExcelToJson](ExcelToJson/README.md) | Excel에서 데이터 JSON과 필드·enum 정의 생성 | .NET 10 |
+| [JsonToCSharp](JsonToCSharp/README.md) | 정의 파일에서 C# 템플릿과 로더 생성 | .NET 10 |
+| [ProtocolGenerator](ProtocolGenerator/README.md) | DLL의 enum과 모델에서 프로토콜 핸들러 생성 | .NET 10 |
+| [DllDeploy](DllDeploy/README.md) | 지정한 DLL과 외부 파일을 대상 폴더로 복사 | .NET 10 |
+| [Shared](Shared/README.md) | ExcelToJson·JsonToCSharp 공통 타입과 생성 형식 | .NET 10 |
 
 ## 데이터 변환 흐름
 
