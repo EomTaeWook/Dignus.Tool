@@ -25,7 +25,7 @@ ExcelTable/*.xlsx → ExcelToJson ─┬─ 각 출력 경로/*.json
 
 Excel을 원본으로 관리합니다. 필드나 값을 변경할 때는 Excel과 설정을 수정하고 두 도구를 순서대로 실행합니다. 생성 JSON과 C#을 직접 편집하면 다음 생성 시 덮어써집니다.
 
-이 문서의 예시는 BoardGame, Paper-Toss, SunWind의 `ExcelTable`과 `ExportTool` 설정을 참고했습니다. 각 프로젝트의 실행 파일과 이 저장소 소스가 같은 버전인지는 확인하지 않았습니다. 현재 소스에서 확인한 제약은 [현재 구현의 주의 사항](#현재-구현의-주의-사항)에 기록했습니다.
+이 문서의 경로와 데이터는 사용법을 설명하기 위한 예시입니다. 실제 입력·출력 위치에 맞게 설정합니다. 현재 소스에서 확인한 제약은 [현재 구현의 주의 사항](#현재-구현의-주의-사항)에 기록했습니다.
 
 ## 실행 준비와 폴더 배치
 
@@ -34,7 +34,7 @@ Excel을 원본으로 관리합니다. 필드나 값을 변경할 때는 Excel�
 - enum을 사용하면 정의가 포함된 DLL과 로딩에 필요한 종속 DLL을 준비합니다.
 - 변환 전에 Excel을 저장합니다. 변환기는 저장된 파일을 임시 파일로 복사해서 읽습니다.
 
-세 프로젝트에서 사용하는 배치 형태입니다.
+폴더 배치 예시입니다.
 
 ```text
 프로젝트/
@@ -63,7 +63,7 @@ Debug 실행은 작업 디렉터리 기준 `../../../config.json`을 읽습니�
 
 ### 기본 테이블
 
-BoardGame의 `Constant.xlsx`는 다음 구조를 사용합니다.
+`Constant.xlsx`를 작성하는 예시입니다.
 
 `Define` 시트:
 
@@ -77,13 +77,13 @@ BoardGame의 `Constant.xlsx`는 다음 구조를 사용합니다.
 
 | Id | Name | Value |
 | ---: | --- | ---: |
-| 1000 | MaxWallGoMember | 4 |
+| 1000 | MaximumItemCount | 4 |
 
 출력 JSON 구조:
 
 ```json
 [
-  { "Id": 1000, "Name": "MaxWallGoMember", "Value": 4 }
+  { "Id": 1000, "Name": "MaximumItemCount", "Value": 4 }
 ]
 ```
 
@@ -107,11 +107,11 @@ BoardGame의 `Constant.xlsx`는 다음 구조를 사용합니다.
 | ConditionField | 조건 판단에 사용할 현재 테이블 필드 |
 | Condition | `is: 값, Ref: 테이블, RefField: 필드` 형식의 조건부 참조 |
 
-선택 항목은 필요한 열만 추가합니다. `Member`는 `Type` 뒤에, `Condition`은 `ConditionField` 뒤에 둡니다. class의 멤버 정의는 class 정의 바로 다음에 Member에 지정한 순서대로 작성합니다. 조사한 세 프로젝트에서는 class·조건부 참조의 실제 사용 예시를 확인하지 못했습니다.
+선택 항목은 필요한 열만 추가합니다. `Member`는 `Type` 뒤에, `Condition`은 `ConditionField` 뒤에 둡니다. class의 멤버 정의는 class 정의 바로 다음에 Member에 지정한 순서대로 작성합니다.
 
 ### 반복 필드
 
-BoardGame의 `WallGoBoardTile7x7.xlsx`는 `Y`를 7개 반복합니다.
+`Position.xlsx`에서 `Y`를 7개 반복하는 예시입니다.
 
 | Name | Count | Required | Type |
 | --- | ---: | --- | --- |
@@ -124,9 +124,9 @@ BoardGame의 `WallGoBoardTile7x7.xlsx`는 `Y`를 7개 반복합니다.
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | 1000 | X0 | 0 | 0 | 1.2 | 2.4 | 3.6 | 4.8 | 6 | 7.2 |
 
-열 이름의 `#` 이후는 필드명 비교에서 제외합니다. 연속된 7개 열이 JSON의 `Y` 배열과 C#의 `List<float>`가 됩니다. Paper-Toss의 `HamsterAccessories.IdleSpriteNames`도 같은 방식으로 6개 문자열을 반복합니다.
+열 이름의 `#` 이후는 필드명 비교에서 제외합니다. 연속된 7개 열이 JSON의 `Y` 배열과 C#의 `List<float>`가 됩니다. 문자열도 같은 방식으로 반복할 수 있습니다.
 
-한 셀에 쉼표로 값을 나열하는 방식과 다릅니다. SunWind의 `HapticFeedback.TimingsMilliseconds`는 `Type=String`, `Count=1`이므로 `0,80,180,80`을 문자열 그대로 출력합니다.
+한 셀에 쉼표로 값을 나열하는 방식과 다릅니다. `Type=String`, `Count=1`인 필드에 `0,80,180,80`을 입력하면 문자열 그대로 출력합니다.
 
 ### 주석 열
 
@@ -134,25 +134,25 @@ Data의 열 이름이 `#`으로 시작하면 해당 열을 출력에서 제외�
 
 | Id | Name | # | MaxHealth |
 | ---: | --- | --- | ---: |
-| 1000 | Raincoat | 우비 | 200 |
+| 1000 | ExampleItem | 편집용 설명 | 200 |
 
-SunWind의 `Clothing.xlsx`와 Paper-Toss의 규칙 테이블 등이 사용하는 구조입니다. `#Status`는 주석 열이고 `Y#1`은 반복 필드 열입니다. 주석 열을 반복 필드의 요소 사이에 끼우지 않습니다.
+`#Status`는 주석 열이고 `Y#1`은 반복 필드 열입니다. 주석 열을 반복 필드의 요소 사이에 끼우지 않습니다.
 
 ### enum
 
-BoardGame은 `TileWallDirectionType`, SunWind는 `SeasonType`, `AchievementsGroupType` 등을 사용합니다.
+DLL에 정의된 `DirectionType` enum을 사용하는 예시입니다.
 
 | Name | Count | Required | Type |
 | --- | ---: | --- | --- |
-| SeasonType | 1 | TRUE | enum |
+| DirectionType | 1 | TRUE | enum |
 
-Data의 SeasonType 열에는 DLL에 정의된 `Spring`, `Summer`, `Fall`, `Winter` 같은 이름을 넣습니다. ExcelToJson의 `ReadAssemblyPath`에 enum이 들어 있는 DLL을 지정합니다.
+Data의 DirectionType 열에는 해당 enum에 정의된 `Left`, `Right` 같은 이름을 넣습니다. ExcelToJson의 `ReadAssemblyPath`에 enum이 들어 있는 DLL을 지정합니다.
 
 JSON에는 enum 이름이 문자열로 출력됩니다. JsonToCSharp는 `enumRef.json`에서 타입의 네임스페이스를 읽습니다. enum을 추가·변경했다면 정의가 반영된 DLL을 준비한 뒤 변환합니다. 변환 도구가 DLL을 빌드하지는 않습니다.
 
 ### 다른 테이블 참조
 
-Paper-Toss의 `HamsterAppearance.DisplayStringKey`는 `String.Name`을, SunWind의 `ClothingSetLayer.Clothing`은 `Clothing.Name`을 참조하도록 정의되어 있습니다.
+`DisplayStringKey`가 `String.xlsx`의 `Name`을 참조하도록 정의하는 예시입니다.
 
 | Name | Count | Required | Type | Ref | RefField |
 | --- | ---: | --- | --- | --- | --- |
@@ -166,7 +166,7 @@ JsonToCSharp는 필수 참조 필드에 원래 값과 `<필드명>Ref` 속성을
 
 ## ExcelToJson 설정
 
-`ExportTool/ExcelToJson/config.json`의 Paper-Toss 예시입니다.
+`ExportTool/ExcelToJson/config.json` 예시입니다.
 
 ```json
 {
@@ -175,13 +175,13 @@ JsonToCSharp는 필수 참조 필드에 원래 값과 `<필드명>Ref` 속성을
   "OutputRefPath": "..\\Exported",
   "OutputTemplatePath": [
     "..\\..\\Datas",
-    "..\\..\\Client\\PaperToss\\Assets\\StreamingAssets\\Datas"
+    "..\\..\\Client\\Assets\\StreamingAssets\\Datas"
   ],
   "ExcelMergeDefinitions": [
     {
       "Name": "String",
       "BaseDefine": "String",
-      "Datas": ["String", "StringHamsterWheel", "StringOnlineRoom"]
+      "Datas": ["String", "StringItems", "StringMessages"]
     }
   ]
 }
@@ -197,13 +197,12 @@ JsonToCSharp는 필수 참조 필드에 원래 값과 `<필드명>Ref` 속성을
 
 ### 문자열 테이블 병합
 
-병합 파일들은 Id, Name, 언어 열 등 동일한 구조와 호환되는 타입을 사용합니다. 언어 열 이름도 통일합니다. BoardGame은 `Korean`·`English`, Paper-Toss와 SunWind는 `Kor`·`Eng`를 사용합니다. 도구가 언어 열 이름을 고정하지는 않습니다.
+병합 파일들은 Id, Name, 언어 열 등 동일한 구조와 호환되는 타입을 사용합니다. 언어 열 이름도 `Korean`·`English`처럼 통일합니다. 도구가 언어 열 이름을 고정하지는 않습니다.
 
-| 프로젝트 | BaseDefine | Datas |
+| 구성 예시 | BaseDefine | Datas |
 | --- | --- | --- |
-| BoardGame | 병합 설정 없음 | String 단일 파일 |
-| Paper-Toss | String | String, StringHamsterWheel, StringOnlineRoom |
-| SunWind | String | String, StringCollection, StringDialogue |
+| 단일 문자열 테이블 | 병합 설정 없음 | String 단일 파일 |
+| 여러 문자열 테이블 병합 | String | String, StringItems, StringMessages |
 
 - Name은 병합 데이터 컨테이너 이름이며 출력 파일명을 정하지 않습니다.
 - BaseDefine이 출력 정의와 파일 이름의 기준입니다. String이면 `String.json`, `ClassDefine/String.json`을 출력합니다.
