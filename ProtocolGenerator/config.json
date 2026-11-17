@@ -1,0 +1,29 @@
+{
+  "Protocols": [
+    {
+      "Namespace": "",
+      "BodyType": "",
+      "ProtocolName": "",
+      "ReadAssemblyPath": "",
+      "GeneratedPaths": [
+        ""
+      ]
+    },
+    {
+      "Namespace": "",
+      "BodyType": "",
+      "ProtocolName": "",
+      "ReadAssemblyPath": "",
+      "GeneratedPaths": [
+        ""
+      ]
+    }
+  ],
+  "HandlerFormat": {
+    "HandleClassFormat": null,
+    "RegistCabllackFormat": null,
+    "DeserializePacketFormat": null,
+    "DeserializeBodyFunctionFormat": null
+  },
+  "UsingNamespace" : "[]"
+}
