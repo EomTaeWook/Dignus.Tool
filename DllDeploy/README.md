@@ -1,5 +1,7 @@
 # DllDeploy
 
+[English overview](../README.md) | [한국어 개요](../README.ko.md) | [전체 사용 가이드](../docs/Usage.ko.md)
+
 버전별 원본 폴더에서 지정한 DLL과 외부 파일을 대상 폴더로 복사하는 .NET 10 도구입니다. 빌드는 수행하지 않습니다.
 
 ## 설정

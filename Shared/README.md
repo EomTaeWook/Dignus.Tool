@@ -1,5 +1,7 @@
 # Shared
 
+[English overview](../README.md) | [한국어 개요](../README.ko.md) | [전체 사용 가이드](../docs/Usage.ko.md)
+
 [ExcelToJson](../ExcelToJson/README.md)과 [JsonToCSharp](../JsonToCSharp/README.md)이 프로젝트 참조로 사용하는 .NET 10 라이브러리입니다. 독립 실행 프로그램이나 config.json은 없습니다.
 
 ## 구성

@@ -1,5 +1,7 @@
 # ExcelToJson
 
+[English overview](../README.md) | [한국어 개요](../README.ko.md) | [전체 사용 가이드](../docs/Usage.ko.md)
+
 Excel의 `Define`·`Data` 시트를 읽어 데이터 JSON, C# 생성용 필드 정의, enum 참조 정보를 출력하는 .NET 10 도구입니다.
 
 ## 준비

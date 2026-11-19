@@ -1,5 +1,7 @@
 # JsonToCSharp
 
+[English overview](../README.md) | [한국어 개요](../README.ko.md) | [전체 사용 가이드](../docs/Usage.ko.md)
+
 [ExcelToJson](../ExcelToJson/README.md)이 만든 필드 정의와 enum 참조 정보를 읽어 C# 템플릿·컨테이너·로더를 생성하는 .NET 10 도구입니다. 데이터 JSON 자체를 입력으로 사용하지 않습니다.
 
 ## 설정
