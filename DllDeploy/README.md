@@ -54,4 +54,4 @@ Release는 실행 파일 폴더의 `config.json`, Debug는 실행 파일 폴더 
 - IncludeDll에 있어도 원본 폴더에 없는 파일은 복사되지 않습니다. 존재하지 않는 ExternalFile도 건너뜁니다.
 - 실패 전에 일부 파일만 복사되었을 수 있습니다. 실제 복사 로그를 확인합니다.
 
-[전체 사용법](../README.md)
+[전체 사용법](../docs/Usage.ko.md)

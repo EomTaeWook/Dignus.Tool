@@ -10,7 +10,7 @@ Tools for Excel conversion, C# generation, protocol handler generation, and DLL 
 
 ## Installation
 
-Open / 열기: `Tools.sln`
+Open: `Tools.sln`
 
 ## Quick start
 

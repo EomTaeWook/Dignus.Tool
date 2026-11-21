@@ -58,4 +58,4 @@ Release는 작업 디렉터리의 `config.json`, Debug는 작업 디렉터리 �
 
 마지막에 키 입력을 기다립니다. `--no-pause`는 지원하지 않습니다. 개별 Protocols 항목의 UsingNamespace는 현재 생성 경로에서 사용하지 않으므로 최상위 값을 지정합니다.
 
-[전체 사용법](../README.md)
+[전체 사용법](../docs/Usage.ko.md)

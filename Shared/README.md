@@ -17,4 +17,4 @@
 | Buffer/DataStream.cs | 정의와 셀 값을 순서대로 읽는 스트림 |
 | Const.cs | 생성 파일·폴더 이름 등 공통 상수 |
 
-ExcelToJson이 내보내는 정의·enum 참조 정보와 JsonToCSharp가 읽는 정보가 이 타입을 공유합니다. 생성 결과를 소비하는 프로젝트의 사용법은 [전체 README](../README.md#jsontocsharp-설정과-생성물)를 참고합니다.
+ExcelToJson이 내보내는 정의·enum 참조 정보와 JsonToCSharp가 읽는 정보가 이 타입을 공유합니다. 생성 결과를 소비하는 프로젝트의 사용법은 [전체 README](../docs/Usage.ko.md#jsontocsharp-설정과-생성물)를 참고합니다.

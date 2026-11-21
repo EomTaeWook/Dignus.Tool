@@ -43,12 +43,12 @@ Release는 작업 디렉터리의 `config.json`, Debug는 작업 디렉터리 �
 | TemplateContainer.cs | Id·Name 조회와 데이터 보관 |
 | TemplateLoader.cs | 전체 JSON 로드·참조 연결, ITemplateDeserializer |
 
-소비 프로젝트는 `ITemplateDeserializer`를 구현하고 `TemplateLoader.Load(...)` 후 `TemplateLoader.MakeRefTemplate()`을 호출합니다. enum을 사용하면 문자열 enum 역직렬화도 처리해야 합니다. [생성물 사용 안내](../README.md#jsontocsharp-설정과-생성물)를 참고합니다.
+소비 프로젝트는 `ITemplateDeserializer`를 구현하고 `TemplateLoader.Load(...)` 후 `TemplateLoader.MakeRefTemplate()`을 호출합니다. enum을 사용하면 문자열 enum 역직렬화도 처리해야 합니다. [생성물 사용 안내](../docs/Usage.ko.md#jsontocsharp-설정과-생성물)를 참고합니다.
 
 ## 주의 사항
 
 - GeneratedPath에서 생성 대상 템플릿에 해당하지 않는 파일을 삭제합니다. 직접 작성한 파일을 넣지 않습니다.
 - 예외 처리 뒤에도 완료 문구를 출력합니다. 완료 문구나 종료 코드만으로 성공을 판단하지 않습니다.
-- 현재 CSharpTemplateFormatPath를 지정하면 해당 파일 대신 config.json을 다시 읽는 문제가 있습니다. [현재 구현의 주의 사항](../README.md#현재-구현의-주의-사항)을 확인합니다.
+- 현재 CSharpTemplateFormatPath를 지정하면 해당 파일 대신 config.json을 다시 읽는 문제가 있습니다. [현재 구현의 주의 사항](../docs/Usage.ko.md#현재-구현의-주의-사항)을 확인합니다.
 
-[전체 사용법](../README.md)
+[전체 사용법](../docs/Usage.ko.md)

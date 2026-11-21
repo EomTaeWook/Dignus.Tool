@@ -10,7 +10,7 @@ Excel 변환, C#·프로토콜 핸들러 생성과 DLL 복사를 위한 도구 �
 
 ## 설치
 
-Open / 열기: `Tools.sln`
+열기: `Tools.sln`
 
 ## 빠른 시작
 
