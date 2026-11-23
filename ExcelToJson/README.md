@@ -10,6 +10,7 @@ Excel의 `Define`·`Data` 시트를 읽어 데이터 JSON, C# 생성용 필드 �
 - 입력 폴더 바로 아래에 `.xlsx`를 둡니다. 하위 폴더와 `~$` 임시 파일은 읽지 않습니다.
 - enum을 사용하면 정의가 포함된 DLL과 종속 DLL을 준비합니다.
 - [Excel 작성 규칙](../docs/Usage.ko.md#excel-작성-규칙)에 따라 원본을 작성하고 저장합니다.
+- class 필드는 [UnitStat의 Define·Data 배치 예시](../docs/Usage.ko.md#class-필드와-멤버-unitstat)를 참고합니다. 클래스 이름은 위쪽 헤더 행에, 멤버 이름은 아래쪽 헤더 행에 배치합니다.
 
 ## 설정
 

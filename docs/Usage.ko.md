@@ -111,6 +111,70 @@ Debug 실행은 작업 디렉터리 기준 `../../../config.json`을 읽습니�
 
 선택 항목은 필요한 열만 추가합니다. `Member`는 `Type` 뒤에, `Condition`은 `ConditionField` 뒤에 둡니다. class의 멤버 정의는 class 정의 바로 다음에 Member에 지정한 순서대로 작성합니다.
 
+### class 필드와 멤버: UnitStat
+
+`Unit.xlsx`에서 `UnitStat`과 `Mp`를 각각 class로 정의하는 예시입니다. UnitStat은 HP·Def·MovementSpeed·Sight를, Mp는 InitialMp·MaxMp를 멤버로 가집니다. **Define에서는 클래스 선언 행의 Member 열에 멤버 이름을 가로로 나열하고, 바로 아래 행들에서 각 멤버의 타입을 정의합니다. Data에서는 위쪽 행에 클래스 이름, 아래쪽 행에 멤버 이름을 배치합니다.**
+
+`Define` 시트:
+
+| Name | Count | Required | Type | Member | Member | Member | Member |
+| --- | ---: | --- | --- | --- | --- | --- | --- |
+| Id | 1 | TRUE | Int32 | | | | |
+| Name | 1 | TRUE | String | | | | |
+| UnitStat | 1 | TRUE | class | HP | Def | MovementSpeed | Sight |
+| HP | 1 | TRUE | Int32 | | | | |
+| Def | 1 | TRUE | Int32 | | | | |
+| MovementSpeed | 1 | TRUE | Int32 | | | | |
+| Sight | 1 | TRUE | Int32 | | | | |
+| Mp | 1 | TRUE | class | InitialMp | MaxMp | | |
+| InitialMp | 1 | TRUE | Int32 | | | | |
+| MaxMp | 1 | TRUE | Int32 | | | | |
+
+- 열 이름은 `Member`를 4번 반복합니다. `Member1` 등의 다른 이름을 사용하지 않습니다.
+- UnitStat의 Count는 클래스의 반복 개수입니다. 멤버가 4개여도 단일 객체이면 1로 지정합니다.
+- UnitStat 바로 다음에 Member에 지정한 순서대로 멤버 정의 행을 둡니다. 각 멤버의 타입과 Count는 해당 행에서 지정합니다.
+- 멤버 정의 행에는 Member 값을 다시 쓰지 않습니다. UnitStat의 마지막 멤버인 Sight 다음에 Mp를 선언합니다. Mp는 UnitStat의 멤버가 아닌 별도의 class 필드입니다. Mp 행은 Member 열 2개만 채우고 나머지는 비웁니다.
+
+`Data` 시트는 다음처럼 헤더를 두 행으로 작성합니다. 표의 왼쪽은 Excel 행 번호이고 A~H는 열 위치입니다. Mp의 데이터 값은 배치 설명용 예시입니다.
+
+<table>
+  <thead>
+    <tr><th>행</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th></tr>
+  </thead>
+  <tbody>
+    <tr><th>1</th><td></td><td></td><td colspan="4" align="center">UnitStat</td><td colspan="2" align="center">Mp</td></tr>
+    <tr><th>2</th><td>Id</td><td>Name</td><td>HP</td><td>Def</td><td>MovementSpeed</td><td>Sight</td><td>InitialMp</td><td>MaxMp</td></tr>
+    <tr><th>3</th><td>1000</td><td>ExampleUnitA</td><td>100</td><td>0</td><td>400</td><td>4</td><td>0</td><td>100</td></tr>
+    <tr><th>4</th><td>1001</td><td>ExampleUnitB</td><td>100</td><td>0</td><td>400</td><td>8</td><td>0</td><td>100</td></tr>
+  </tbody>
+</table>
+
+- `C1:F1`을 병합해 `UnitStat`을 입력하고, `C2:F2`에 각 멤버 이름을 입력합니다. 클래스 이름은 범위의 왼쪽 첫 셀인 C1에서 읽습니다.
+- `G1:H1`을 병합해 `Mp`를 입력하고, G2에 InitialMp, H2에 MaxMp를 입력합니다.
+- A1·B1은 비워 두고 A2에 Id, B2에 Name을 둡니다. Id·Name을 1행부터 세로로 병합하지 않습니다.
+- 데이터는 3행부터 입력합니다. UnitStat 값을 위한 별도 열을 추가하지 않고 C~F열의 값을 하나의 객체로 묶습니다.
+
+출력되는 `Unit.json` 구조:
+
+```json
+[
+  {
+    "Id": 1000,
+    "Name": "ExampleUnitA",
+    "UnitStat": { "HP": 100, "Def": 0, "MovementSpeed": 400, "Sight": 4 },
+    "Mp": { "InitialMp": 0, "MaxMp": 100 }
+  },
+  {
+    "Id": 1001,
+    "Name": "ExampleUnitB",
+    "UnitStat": { "HP": 100, "Def": 0, "MovementSpeed": 400, "Sight": 8 },
+    "Mp": { "InitialMp": 0, "MaxMp": 100 }
+  }
+]
+```
+
+JsonToCSharp의 기본 형식에서는 `UnitTemplate` 안에 `InnerUnitStat`·`InnerMp` 클래스와 각 타입의 `UnitStat`·`Mp` 속성이 생성됩니다. 각 멤버는 `int` 속성이 됩니다. 이 예시는 소스의 읽기 규칙을 기준으로 작성했으며, 이번 문서 변경에서 변환을 실행하지는 않았습니다.
+
 ### 반복 필드
 
 `Position.xlsx`에서 `Y`를 7개 반복하는 예시입니다.
