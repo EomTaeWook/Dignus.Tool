@@ -1,7 +1,7 @@
 ﻿using Dignus.Log;
 using Dignus.Log.LogTarget;
+using Dignus.Log.Formatting;
 using Dignus.Log.Model;
-using Dignus.Log.Rule;
 using ExcelToJson;
 using ExcelToJson.Models;
 using Shared;
@@ -91,12 +91,11 @@ internal class Program
         var logConfiguration = new LogConfiguration();
         ConsoleLogTarget consoleLogTarget = new ConsoleLogTarget
         {
-            LogFormatRenderer = "${message} | ${callerFileName} : ${callerLineNumber}",
+            LogFormatRenderer = new LogFormatRenderer("${message} | ${callerFileName} : ${callerLineNumber}"),
             ErrorColor = ConsoleColor.Red,
             FatalColor = ConsoleColor.Red,
         };
-        var rule = new LoggerRule("console", LogLevel.Debug, consoleLogTarget);
-        logConfiguration.AddLogRule("console", rule);
+        logConfiguration.AddLogger("console", LoggerType.Sync).AddLogTarget(LogLevel.Debug, consoleLogTarget);
         LogBuilder.Configuration(logConfiguration);
         LogBuilder.Build();
         LogHelper.SetLogger(LogManager.GetLogger("console"));

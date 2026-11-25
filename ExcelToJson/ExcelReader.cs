@@ -7,9 +7,14 @@ using Shared.Buffer;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.OleDb;
+using System.Globalization;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Text;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace ExcelToJson
 {
@@ -17,7 +22,6 @@ namespace ExcelToJson
     {
         private const string DataSheetName = "Data";
         private const string DefineSheetName = "Define";
-        private const string ConnectString = @"Provider=Microsoft.ACE.OLEDB.12.0;Mode=Read;Data Source={0};Extended Properties=""Excel 12.0 Xml;HDR=NO;IMEX=1;MAXSCANROWS=0""";
 
         private readonly DataContainer _dataContainer = new DataContainer();
 
@@ -566,42 +570,162 @@ namespace ExcelToJson
         {
             try
             {
-                DataTable dataTable = null;
-
-                using (var conn = new OleDbConnection(string.Format(ConnectString, path)))
+                using (var archive = ZipFile.OpenRead(path))
                 {
-                    conn.Open();
-
-                    var cmd = new OleDbCommand
+                    XNamespace spreadsheetNamespace = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+                    XNamespace documentRelationshipNamespace = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+                    XNamespace packageRelationshipNamespace = "http://schemas.openxmlformats.org/package/2006/relationships";
+                    XDocument workbook;
+                    XDocument relationships;
+                    using (var stream = archive.GetEntry("xl/workbook.xml").Open())
                     {
-                        Connection = conn
-                    };
-
-                    var dataTableSheet = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
-                    foreach (DataRow row in dataTableSheet.Rows)
+                        workbook = XDocument.Load(stream);
+                    }
+                    using (var stream = archive.GetEntry("xl/_rels/workbook.xml.rels").Open())
                     {
-                        var currentSheetName = row["TABLE_NAME"].ToString();
+                        relationships = XDocument.Load(stream);
+                    }
 
-                        if (currentSheetName.Equals($"{sheetName}$"))
+                    var sheet = workbook.Root.Element(spreadsheetNamespace + "sheets").Elements(spreadsheetNamespace + "sheet").FirstOrDefault(element => (string)element.Attribute("name") == sheetName);
+                    if (sheet == null)
+                    {
+                        return null;
+                    }
+
+                    var relationshipIdentifier = (string)sheet.Attribute(documentRelationshipNamespace + "id");
+                    var relationship = relationships.Root.Elements(packageRelationshipNamespace + "Relationship").First(element => (string)element.Attribute("Id") == relationshipIdentifier);
+                    var sheetUri = new Uri(new Uri("file:///xl/workbook.xml"), (string)relationship.Attribute("Target"));
+                    var sheetPath = Uri.UnescapeDataString(sheetUri.AbsolutePath).TrimStart('/');
+                    var sharedStrings = new List<string>();
+                    var sharedStringsEntry = archive.GetEntry("xl/sharedStrings.xml");
+                    if (sharedStringsEntry != null)
+                    {
+                        using (var stream = sharedStringsEntry.Open())
                         {
-                            cmd.CommandText = "SELECT * FROM [" + sheetName + "$]";
-                            dataTable = new DataTable
+                            var sharedStringsDocument = XDocument.Load(stream, LoadOptions.PreserveWhitespace);
+                            foreach (var sharedString in sharedStringsDocument.Root.Elements(spreadsheetNamespace + "si"))
                             {
-                                TableName = sheetName
-                            };
-
-                            var dataAdapter = new OleDbDataAdapter(cmd);
-                            dataAdapter.Fill(dataTable);
+                                sharedStrings.Add(ReadSpreadsheetText(sharedString, spreadsheetNamespace));
+                            }
                         }
                     }
-                }
 
-                return dataTable;
+                    XDocument worksheet;
+                    using (var stream = archive.GetEntry(sheetPath).Open())
+                    {
+                        worksheet = XDocument.Load(stream, LoadOptions.PreserveWhitespace);
+                    }
+
+                    var dataTable = new DataTable(sheetName);
+                    foreach (var row in worksheet.Root.Element(spreadsheetNamespace + "sheetData").Elements(spreadsheetNamespace + "row"))
+                    {
+                        var rowIndex = int.Parse((string)row.Attribute("r"), CultureInfo.InvariantCulture) - 1;
+                        foreach (var cell in row.Elements(spreadsheetNamespace + "c"))
+                        {
+                            var valueElement = cell.Element(spreadsheetNamespace + "v");
+                            var inlineString = cell.Element(spreadsheetNamespace + "is");
+                            if (valueElement == null)
+                            {
+                                if (inlineString == null)
+                                {
+                                    continue;
+                                }
+                            }
+
+                            var cellType = (string)cell.Attribute("t");
+                            var cellValue = string.Empty;
+                            if (cellType == "s")
+                            {
+                                cellValue = sharedStrings[int.Parse(valueElement.Value, CultureInfo.InvariantCulture)];
+                            }
+                            else if (cellType == "inlineStr")
+                            {
+                                cellValue = ReadSpreadsheetText(inlineString, spreadsheetNamespace);
+                            }
+                            else if (valueElement != null)
+                            {
+                                cellValue = valueElement.Value;
+                                if (cellType == "str")
+                                {
+                                    cellValue = DecodeSpreadsheetText(cellValue);
+                                }
+                            }
+
+                            if (cellValue.Length == 0)
+                            {
+                                continue;
+                            }
+                            if (cellType == "e")
+                            {
+                                throw new FormatException($"{sheetName}!{(string)cell.Attribute("r")} contains an Excel error: {cellValue}");
+                            }
+
+                            var columnIndex = 0;
+                            foreach (var character in (string)cell.Attribute("r"))
+                            {
+                                if (character < 'A')
+                                {
+                                    break;
+                                }
+                                if (character > 'Z')
+                                {
+                                    break;
+                                }
+                                columnIndex = columnIndex * 26 + character - 'A' + 1;
+                            }
+                            columnIndex--;
+
+                            while (dataTable.Columns.Count <= columnIndex)
+                            {
+                                dataTable.Columns.Add($"F{dataTable.Columns.Count + 1}", typeof(object));
+                            }
+                            while (dataTable.Rows.Count <= rowIndex)
+                            {
+                                dataTable.Rows.Add(dataTable.NewRow());
+                            }
+                            if (cellType == "b")
+                            {
+                                dataTable.Rows[rowIndex][columnIndex] = cellValue == "1";
+                            }
+                            else
+                            {
+                                dataTable.Rows[rowIndex][columnIndex] = cellValue;
+                            }
+                        }
+                    }
+
+                    return dataTable;
+                }
             }
             catch (Exception exception)
             {
-                throw new FormatException($"{exception.Message} path : {path}");
+                throw new FormatException($"{exception.Message} path : {path}", exception);
             }
+        }
+
+        private string ReadSpreadsheetText(XElement element, XNamespace spreadsheetNamespace)
+        {
+            var text = new StringBuilder();
+            foreach (var child in element.Elements())
+            {
+                if (child.Name == spreadsheetNamespace + "t")
+                {
+                    text.Append(child.Value);
+                }
+                else if (child.Name == spreadsheetNamespace + "r")
+                {
+                    foreach (var textElement in child.Elements(spreadsheetNamespace + "t"))
+                    {
+                        text.Append(textElement.Value);
+                    }
+                }
+            }
+            return DecodeSpreadsheetText(text.ToString());
+        }
+
+        private string DecodeSpreadsheetText(string value)
+        {
+            return Regex.Replace(value, "_x([0-9A-Fa-f]{4})_", match => ((char)int.Parse(match.Groups[1].Value, NumberStyles.HexNumber, CultureInfo.InvariantCulture)).ToString());
         }
 
         private List<CellData> GetDataCell(DataStream<Define> defineReader, DataStream<object> rowReader, string fileName)

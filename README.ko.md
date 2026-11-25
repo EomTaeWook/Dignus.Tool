@@ -6,7 +6,7 @@ Excel 변환, C#·프로토콜 핸들러 생성과 DLL 복사를 위한 도구 �
 
 ## 요구 사항
 
-.NET 10이 필요하다. ExcelToJson은 Windows와 실행 프로세스의 비트 수에 맞는 Microsoft.ACE.OLEDB.12.0 공급자도 필요하다.
+.NET 10이 필요하다. ExcelToJson은 .xlsx 셀을 직접 읽으며 Excel이나 ACE OLE DB 공급자가 필요하지 않다.
 
 ## 설치
 

@@ -6,7 +6,7 @@ Tools for Excel conversion, C# generation, protocol handler generation, and DLL 
 
 ## Requirements
 
-.NET 10. ExcelToJson also needs Windows and Microsoft.ACE.OLEDB.12.0 with process-compatible bitness.
+.NET 10. ExcelToJson reads .xlsx cells directly and does not require Excel or an ACE OLE DB provider.
 
 ## Installation
 
